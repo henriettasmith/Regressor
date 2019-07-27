@@ -8,6 +8,7 @@ public class Point : Node2D
 
     public override void _Draw()
     {
-        DrawCircle(Vector2.Zero, 4f, Colors.Blue);
+        float radius = 6f;
+        DrawCircle(Vector2.Zero, radius, Colors.Blue);
     }
 }

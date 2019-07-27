@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/Board.cs" type="Script" id=2]
-[ext_resource path="res://Point.tscn" type="PackedScene" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 300, 300 )
@@ -20,7 +19,7 @@ anchor_mode = 0
 current = true
 
 [node name="Board" type="Area2D" parent="."]
-position = Vector2( 326.122, 349.167 )
+position = Vector2( 350, 350 )
 monitoring = false
 monitorable = false
 script = ExtResource( 2 )
@@ -28,8 +27,26 @@ script = ExtResource( 2 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Board"]
 shape = SubResource( 1 )
 
-[node name="Point" parent="." instance=ExtResource( 3 )]
-position = Vector2( 177.982, 138.724 )
+[node name="Label" type="Label" parent="Board"]
+visible = false
+margin_left = 9.31
+margin_top = 20.16
+margin_right = 61.31
+margin_bottom = 34.16
+text = "(0.1,0.5)"
 
-[node name="Point2" parent="." instance=ExtResource( 3 )]
-position = Vector2( 377.671, 311.72 )
+[node name="Bottom Left" type="Label" parent="."]
+margin_left = 34.7266
+margin_top = 653.219
+margin_right = 74.7266
+margin_bottom = 667.219
+text = "(0,0)"
+
+[node name="Top Right" type="Label" parent="."]
+margin_left = 652.62
+margin_top = 36.5228
+margin_right = 692.62
+margin_bottom = 50.5228
+text = "(1,1)"
+[connection signal="mouse_entered" from="Board" to="Board" method="_on_Board_mouse_entered"]
+[connection signal="mouse_exited" from="Board" to="Board" method="_on_Board_mouse_exited"]
