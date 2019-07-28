@@ -12,7 +12,7 @@ public class Board : Area2D
     [Export]
     float selectionRadius = 0.02f;
 
-    private List<Point> points = new List<Point>();
+    public List<Point> points = new List<Point>();
     private Point selected = null;
     private bool mouseOver = false;
 
@@ -36,11 +36,13 @@ public class Board : Area2D
 
             if(Input.IsActionPressed("LeftClick"))
             {
+                //Drag selected
                 if(selected != null)
                 {
                     selected.pos = mouseGridPos;
                     selected.Position = mouseWorldPos;
                 }
+                //Add new point
                 else
                 {
                     selected = findSelected(mouseGridPos);
@@ -56,12 +58,14 @@ public class Board : Area2D
             }
             else if(Input.IsActionPressed("RightClick"))
             {
+                //Remove selected
                 if(selected != null)
                 {
                     selected.QueueFree();
                     points.Remove(selected);
                     selected = null;
                 }
+                //Delete nearby point
                 else
                 {
                     Point p = findSelected(mouseGridPos);
@@ -113,8 +117,8 @@ public class Board : Area2D
 
     public Vector2 ConvertToWorldPos(Vector2 gridPos)
     {
-        float x = ViewRadius + 2*ViewRadius*gridPos.x;
-        float y = ViewRadius + 2*ViewRadius*(1 - gridPos.y);
+        float x = 2*ViewRadius*gridPos.x - ViewRadius;
+        float y = 2*ViewRadius*(1 - gridPos.y) - ViewRadius;
         return new Vector2(x, y);
     }
 
