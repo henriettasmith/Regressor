@@ -12,7 +12,7 @@ public class Polynomial
         degree = deg;
         for(int i = 0; i <= degree; ++i)
         {
-            coefs.Add(0.1);
+            coefs.Add(0.5);
         }
     }
 
@@ -44,7 +44,7 @@ public class Main : Node
     private int degree = 1;
 
     private bool running = false;
-    private float rate = 0.3f;
+    private float rate = 0f;
     private float clock = 0f;
 
     public override void _Ready()
@@ -151,13 +151,14 @@ public class Main : Node
             double yHat = GreenPolynomial.solve((double)p.pos.x);
             for(int d = 0; d <= degree; ++d)
             {
-                deltas[d] += Math.Pow((double)p.pos.x, d) * (yHat - (double)p.pos.y) / (double)board.points.Count;
+                double de = Math.Pow((double)p.pos.x, d) * (yHat - (double)p.pos.y) / (double)board.points.Count;
+                deltas[d] += Math.Sign(de) * Math.Pow(Math.Abs(de), 1/((double)d+1));
             }
         }
 
         for(int d = 0; d <= degree; ++d)
         {
-            GreenPolynomial.coefs[d] -= deltas[d];
+            GreenPolynomial.coefs[d] -= 0.01 * deltas[d];
         }
 
         UpdateLines();
