@@ -111,6 +111,13 @@ margin_right = 764.4
 margin_bottom = 156.444
 text = "Reset"
 
+[node name="Nudge" type="Button" parent="."]
+margin_left = 876.886
+margin_top = 52.1484
+margin_right = 924.886
+margin_bottom = 72.1484
+text = "Nudge"
+
 [node name="LineEdit" type="LineEdit" parent="."]
 margin_left = 772.0
 margin_top = 96.0
@@ -124,4 +131,5 @@ placeholder_text = "Number"
 [connection signal="pressed" from="Stop" to="." method="Stop"]
 [connection signal="pressed" from="Step" to="." method="Step"]
 [connection signal="pressed" from="Reset" to="." method="Reset"]
+[connection signal="pressed" from="Nudge" to="." method="Nudge"]
 [connection signal="text_changed" from="LineEdit" to="." method="SetDegree"]

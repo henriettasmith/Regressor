@@ -5,23 +5,23 @@ using System.Collections.Generic;
 public class Polynomial
 {
     public int degree = 1;
-    public List<float> coefs = new List<float>();
+    public List<double> coefs = new List<double>();
 
     public Polynomial(int deg)
     {
         degree = deg;
         for(int i = 0; i <= degree; ++i)
         {
-            coefs.Add(0.1f);
+            coefs.Add(0.1);
         }
     }
 
-    public float solve(float x)
+    public double solve(double x)
     {
-        float ret = 0;
+        double ret = 0;
         for(int i = 0; i <= degree; ++i)
         {
-            ret += Mathf.Pow(x, i) * coefs[i];
+            ret += Math.Pow(x, i) * coefs[i];
         }
         return ret;
     }
@@ -73,10 +73,10 @@ public class Main : Node
         Vector2[] points = new Vector2[pointCount+1];
         for(int i = 0; i <= pointCount; ++i)
         {
-            float x = i/(float)pointCount;
-            float y = polynomial.solve(x);
-            if(y > 1)
-                y = 1;
+            float x = (i/(float)pointCount)*board.boardScale;
+            float y = (float)polynomial.solve(x);
+            if(y > board.boardScale)
+                y = board.boardScale;
             if(y < 0)
                 y = 0;
             points[i] = board.ConvertToWorldPos(new Vector2(x, y));
@@ -111,44 +111,79 @@ public class Main : Node
     {
         running = false;
         Train();
+        GD.Print(MSE());
     }
 
-    public void Train()
+    public void CyclePolynomials()
     {
-        if(board.points.Count == 0)
-            return;
-
         RedPolynomial = OrangePolynomial;
         OrangePolynomial = YellowPolynomial;
         YellowPolynomial = GreenPolynomial;
 
         Polynomial newPoly = new Polynomial(degree);
-        for(int i = 0; i < Mathf.Min(GreenPolynomial.degree, degree); ++i)
+        for(int i = 0; i <= Mathf.Min(GreenPolynomial.degree, degree); ++i)
         {
             newPoly.coefs[i] = GreenPolynomial.coefs[i];
         }
 
         GreenPolynomial = newPoly;
+    }
 
-        List<float> deltas = new List<float>(new float[degree+1]);
-        foreach(Point p in board.points)
-        {
-            float yHat = GreenPolynomial.solve(p.pos.x);
-            for(int d = 0; d <= degree; ++d)
-            {
-                deltas[d] += Mathf.Pow(p.pos.x, d) * (yHat - p.pos.y) / board.points.Count;
-            }
-        }
-
-        for(int d = 0; d < degree; ++d)
-        {
-            GreenPolynomial.coefs[d] -= deltas[d];
-        }
-
+    public void UpdateLines()
+    {
         UpdateLine(RedLine, RedPolynomial);
         UpdateLine(OrangeLine, OrangePolynomial);
         UpdateLine(YellowLine, YellowPolynomial);
         UpdateLine(GreenLine, GreenPolynomial);
+    }
+
+    public void Train()
+    {
+        CyclePolynomials();
+
+        if(board.points.Count == 0)
+            return;
+
+        List<double> deltas = new List<double>(new double[degree+1]);
+        foreach(Point p in board.points)
+        {
+            
+            double yHat = GreenPolynomial.solve((double)p.pos.x);
+            for(int d = 0; d <= degree; ++d)
+            {
+                deltas[d] += Math.Pow((double)p.pos.x, d) * (yHat - (double)p.pos.y) / (double)board.points.Count;
+            }
+        }
+
+        for(int d = 0; d <= degree; ++d)
+        {
+            GreenPolynomial.coefs[d] -= deltas[d];
+        }
+
+        UpdateLines();
+    }
+
+    public void Nudge()
+    {
+        CyclePolynomials();
+
+        for(int d = 0; d <= degree; ++d)
+        {
+            GreenPolynomial.coefs[d] += (float)GD.RandRange(-1,1);
+        }
+
+        UpdateLines();
+    }
+
+    public double MSE()
+    {
+        double mse = 0.0;
+        foreach(Point p in board.points)
+        {
+            double yHat = GreenPolynomial.solve((double)p.pos.x);
+            mse += Math.Pow(yHat-(double)p.pos.y, 2)/(double)board.points.Count;
+        }
+        return mse;
     }
 
     public void Reset()

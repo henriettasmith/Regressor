@@ -15,6 +15,7 @@ public class Board : Area2D
     public List<Point> points = new List<Point>();
     private Point selected = null;
     private bool mouseOver = false;
+    public float boardScale = 1f;
 
     private PackedScene PointNode = (PackedScene)ResourceLoader.Load("res://Point.tscn");
     private Label label;
@@ -87,7 +88,7 @@ public class Board : Area2D
     {
         foreach(Point p in points)
         {
-            if(p.pos.DistanceTo(mousePosition) < selectionRadius)
+            if(p.pos.DistanceTo(mousePosition) < selectionRadius*boardScale)
             {
                 return p;
             }
@@ -117,15 +118,15 @@ public class Board : Area2D
 
     public Vector2 ConvertToWorldPos(Vector2 gridPos)
     {
-        float x = 2*ViewRadius*gridPos.x - ViewRadius;
-        float y = 2*ViewRadius*(1 - gridPos.y) - ViewRadius;
+        float x = 2*ViewRadius*gridPos.x/boardScale - ViewRadius;
+        float y = 2*ViewRadius*(1 - (gridPos.y/boardScale)) - ViewRadius;
         return new Vector2(x, y);
     }
 
     public Vector2 ConvertToGridPos(Vector2 worldPos)
     {
-        float x = (worldPos.x + ViewRadius)/(ViewRadius*2);
-        float y = 1 - (worldPos.y + ViewRadius)/(ViewRadius*2);
+        float x = (worldPos.x + ViewRadius)/(ViewRadius*2)*boardScale;
+        float y = (1 - (worldPos.y + ViewRadius)/(ViewRadius*2))*boardScale;
         return new Vector2(x, y);
     }
 }
